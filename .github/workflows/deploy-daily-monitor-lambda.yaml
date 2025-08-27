@@ -60,13 +60,14 @@ jobs:
     - name: Build Docker image (debug)
       run: |
         echo " Building Docker image..."
-        docker buildx build -f ./Terraform/Lambda/Code/daily_monitor_lambda/Dockerfile \
+        docker buildx build \
+          -f ./Terraform/Lambda/Code/daily_monitor_lambda/Dockerfile \
           --platform linux/arm64 \
           --provenance=false \
           --sbom=false \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-          --load .
+          --load ./Terraform/Lambda/Code/daily_monitor_lambda
 
     - name: Push image to ECR
       run: |
