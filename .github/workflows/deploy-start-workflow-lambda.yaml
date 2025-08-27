@@ -68,7 +68,7 @@ jobs:
           --sbom=false \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-          --load ./Terraform/Lambda/Code/start_workflow_lambda
+          --load ./Terraform/Lambda/Code/start-workflow-lambda
 
     - name: Push image to ECR
       run: |
