@@ -18,3 +18,8 @@ variable "csv_to_parquet_sfn_name" {
   type = string
   
 }
+
+variable "start_workflow_lambda_ecr_repo_url" {
+  description = "URL of the ECR repo of the end_workflow_lambda"
+  type = string
+}

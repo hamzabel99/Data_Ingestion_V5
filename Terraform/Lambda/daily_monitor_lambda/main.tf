@@ -102,8 +102,14 @@ resource "aws_lambda_function" "daily_monitor_lambda" {
   package_type  = "Image"
   image_uri     = "${var.daily_monitor_lambda_ecr_repo_url}:latest"
 
+  architectures = ["arm64"]  
 
   memory_size = 512
   timeout     = 30
-
+  environment {
+    variables = {
+      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name 
+      SNS_TOPIC_ARN            = var.daily_monitor_topic_arn
+    }
+}
 }

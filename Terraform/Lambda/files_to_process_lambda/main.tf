@@ -78,26 +78,21 @@ resource "aws_iam_role_policy" "files_to_process_lambda_permissions" {
 }
 
 
-data "archive_file" "data_files_to_process_lambda" {
-  type        = "zip"
-  source_file = "${path.module}/../Code/files_to_process_lambda/files_to_process_lambda.py"
-  output_path = "${path.module}/../Code/files_to_process_lambda/files_to_process_lambda.zip"
-}
-
-
 resource "aws_lambda_function" "files_to_process_lambda" {
-  filename      = data.archive_file.data_files_to_process_lambda.output_path
-  function_name = "files_to_process_lambda-${var.env}"
+  function_name = "files_to_process_lambda_${var.env}"
   role          = aws_iam_role.files_to_process_lambda_role.arn
-  handler       = "files_to_process_lambda.lambda_handler"
+  package_type  = "Image"
+  image_uri     = "${var.files_to_process_lambda_ecr_repo_url}:latest"
 
-  runtime = "python3.12"
+  architectures = ["arm64"]  
 
+  memory_size = 512
+  timeout     = 30
   environment {
     variables = {
-      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name
+      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name 
     }
-  }
+}
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_trigger_lambda" {

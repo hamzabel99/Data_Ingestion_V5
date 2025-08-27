@@ -77,27 +77,24 @@ resource "aws_iam_role_policy" "start_workflow_lambda_permissions" {
 }
 
 
-data "archive_file" "data_start_workflow_lambda" {
-  type        = "zip"
-  source_file = "${path.module}/../Code/start-workflow-lambda/start-workflow-lambda.py"
-  output_path = "${path.module}/../Code/start-workflow-lambda/start-workflow-lambda.zip"
-}
-
 
 resource "aws_lambda_function" "start_workflow_lambda" {
-  filename      = data.archive_file.data_start_workflow_lambda.output_path
-  function_name = "start_workflow_lambda-${var.env}"
+  function_name = "start_workflow_lambda_${var.env}"
   role          = aws_iam_role.start_workflow_lambda_role.arn
-  handler       = "start-workflow-lambda.lambda_handler"
+  package_type  = "Image"
+  image_uri     = "${var.start_workflow_lambda_ecr_repo_url}:latest"
 
-  runtime = "python3.12"
+  architectures = ["arm64"]  
 
+  memory_size = 512
+  timeout     = 30
   environment {
     variables = {
+      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name 
       WORKFLOW_METADATA_TABLE = var.workflow_metadata_table_name
-      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name
+
     }
-  }
+}
 }
 
 

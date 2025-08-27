@@ -12,3 +12,8 @@ variable "workflow_metadata_table_name" {
   type  = string
   
 }
+
+variable "end_workflow_lambda_ecr_repo_url" {
+  description = "URL of the ECR repo of the end_workflow_lambda"
+  type = string
+}
