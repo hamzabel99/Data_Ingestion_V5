@@ -2,7 +2,7 @@ name: Build and Deploy daily_monitor_lambda Docker Image
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: main
     paths:
       - 'Terraform/Lambda/daily_monitor_lambda/**'
       - 'Terraform/Lambda/Code/daily_monitor_lambda/**'
@@ -28,11 +28,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     
-    # Matrix pour déployer sur différents environnements
     strategy:
       matrix:
         environment: 
-          - ${{ github.event.inputs.environment || 'dev' }}  # Par défaut 'dev' sur push automatique
+          - ${{ github.event.inputs.environment || 'dev' }} 
     
     environment: ${{ matrix.environment }}
     
@@ -60,7 +59,7 @@ jobs:
         echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
 
     - name: Build Docker image
-      working-directory: ./Terraform/Lambda/Code/daily_monitor_lambda  # Ajustez selon votre structure
+      working-directory: ./Terraform/Lambda/Code/daily_monitor_lambda  
       run: |
         docker buildx build \
           --platform linux/arm64 \
