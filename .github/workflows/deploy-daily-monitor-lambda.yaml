@@ -59,7 +59,7 @@ jobs:
         echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
 
     - name: Build Docker image
-      working-directory: ./Terraform/Lambda/Code/daily_monitor_lambda  
+      working-directory: Terraform/Lambda/Code/daily_monitor_lambda  
       run: |
         docker buildx build \
           --platform linux/arm64 \
