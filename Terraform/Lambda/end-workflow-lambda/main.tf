@@ -35,8 +35,8 @@ data "aws_iam_policy_document" "end_workflow_lambda_policy" {
       "dynamodb:BatchWriteItem"
     ]
     resources = [
-    "arn:aws:dynamodb:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:table/${var.workflow_statut_table_name}"
-]
+      "arn:aws:dynamodb:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:table/${var.workflow_statut_table_name}"
+    ]
   }
 
   statement {
@@ -66,14 +66,14 @@ resource "aws_lambda_function" "end_workflow_lambda" {
   package_type  = "Image"
   image_uri     = "${var.end_workflow_lambda_ecr_repo_url}:latest"
 
-  architectures = ["arm64"]  
+  architectures = ["arm64"]
 
   memory_size = 512
   timeout     = 30
   environment {
     variables = {
-      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name 
+      WORKFLOW_STATUS_TABLE   = var.workflow_statut_table_name
       WORKFLOW_METADATA_TABLE = var.workflow_metadata_table_name
     }
-}
+  }
 }

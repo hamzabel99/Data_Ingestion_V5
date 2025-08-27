@@ -8,5 +8,5 @@ output "queue_policy_id" {
 
 output "preprocess_queue_name" {
   value = aws_sqs_queue.preprocess_queue.name
-  
+
 }

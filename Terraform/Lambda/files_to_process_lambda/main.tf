@@ -23,7 +23,7 @@ resource "aws_iam_role" "files_to_process_lambda_role" {
 
 
 data "aws_iam_policy_document" "files_to_process_lambda_policy" {
-  
+
   statement {
     sid    = "SQSPoller"
     effect = "Allow"
@@ -84,15 +84,15 @@ resource "aws_lambda_function" "files_to_process_lambda" {
   package_type  = "Image"
   image_uri     = "${var.files_to_process_lambda_ecr_repo_url}:latest"
 
-  architectures = ["arm64"]  
+  architectures = ["arm64"]
 
   memory_size = 512
   timeout     = 30
   environment {
     variables = {
-      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name 
+      WORKFLOW_STATUS_TABLE = var.workflow_statut_table_name
     }
-}
+  }
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_trigger_lambda" {

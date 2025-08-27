@@ -23,7 +23,7 @@ resource "aws_iam_role" "start_workflow_lambda_role" {
 
 
 data "aws_iam_policy_document" "start_workflow_lambda_policy" {
- 
+
 
   statement {
     sid    = "DynamoReadWorkflowMetadata"
@@ -43,8 +43,8 @@ data "aws_iam_policy_document" "start_workflow_lambda_policy" {
       "arn:aws:dynamodb:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:table/${var.workflow_metadata_table_name}"
     ]
   }
-  
-statement {
+
+  statement {
     sid    = "StartStepFunction"
     effect = "Allow"
     actions = [
@@ -84,17 +84,17 @@ resource "aws_lambda_function" "start_workflow_lambda" {
   package_type  = "Image"
   image_uri     = "${var.start_workflow_lambda_ecr_repo_url}:latest"
 
-  architectures = ["arm64"]  
+  architectures = ["arm64"]
 
   memory_size = 512
   timeout     = 30
   environment {
     variables = {
-      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name 
+      WORKFLOW_STATUS_TABLE   = var.workflow_statut_table_name
       WORKFLOW_METADATA_TABLE = var.workflow_metadata_table_name
 
     }
-}
+  }
 }
 
 

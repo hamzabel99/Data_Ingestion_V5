@@ -1,6 +1,6 @@
 resource "aws_cloudwatch_event_rule" "daily_data_monitoring_trigger" {
-  name        = "Daily_data_monitoring_trigger-${var.env}"
-  description = "Triggers monitoring lambda every day"
+  name                = "Daily_data_monitoring_trigger-${var.env}"
+  description         = "Triggers monitoring lambda every day"
   schedule_expression = "cron(0 0 1 1,7 ? *)"
 }
 
@@ -22,8 +22,8 @@ resource "aws_lambda_permission" "allow_cloudwatch_daily_data_monitoring_trigger
 
 
 resource "aws_cloudwatch_event_rule" "start_workflow_lambda_trigger" {
-  name        = "start_workflow_lambda_trigger-${var.env}"
-  description = "Triggers starting workflow execution lambda every .... ?"
+  name                = "start_workflow_lambda_trigger-${var.env}"
+  description         = "Triggers starting workflow execution lambda every .... ?"
   schedule_expression = "cron(0 0 1 1,7 ? *)"
 }
 

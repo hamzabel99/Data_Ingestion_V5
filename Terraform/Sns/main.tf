@@ -10,5 +10,5 @@ resource "aws_sns_topic" "daily_monitor_topic" {
 resource "aws_sns_topic_subscription" "daily_monitor_topic_target" {
   topic_arn = aws_sns_topic.daily_monitor_topic.arn
   protocol  = "email"
-  endpoint = var.email_target_monitoring
+  endpoint  = var.email_target_monitoring
 }

@@ -6,59 +6,59 @@ resource "aws_sfn_state_machine" "sfn_state_machine" {
   role_arn = aws_iam_role.csv_to_parquet_sfn_role.arn
 
   definition = jsonencode({
-  "Comment": "Workflow Glue avec suivi dans DynamoDB",
-  "StartAt": "RunGlueJob",
-  "States": {
-    "RunGlueJob": {
-      "Next": "TransformData",
-      "Type": "Task",
-      "Resource": "arn:aws:states:::glue:startJobRun.sync",
-      "Parameters": {
-        "JobName": var.ingestion_glue_job_name,
-        "Arguments": {
-          "--input_event.$": "States.JsonToString($)"
-        }
+    "Comment" : "Workflow Glue avec suivi dans DynamoDB",
+    "StartAt" : "RunGlueJob",
+    "States" : {
+      "RunGlueJob" : {
+        "Next" : "TransformData",
+        "Type" : "Task",
+        "Resource" : "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters" : {
+          "JobName" : var.ingestion_glue_job_name,
+          "Arguments" : {
+            "--input_event.$" : "States.JsonToString($)"
+          }
+        },
+        "Retry" : [
+          {
+            "ErrorEquals" : [
+              "States.ALL"
+            ],
+            "IntervalSeconds" : 0,
+            "MaxAttempts" : 1,
+            "BackoffRate" : 1
+          }
+        ]
       },
-      "Retry": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "IntervalSeconds": 0,
-          "MaxAttempts": 1,
-          "BackoffRate": 1
-        }
-      ]
-    },
-    "TransformData": {
-      "Type": "Pass",
-      "Next": "EndWorkflow",
-      "Parameters": {
-        "glue_output.$": "$",
-        "original_input.$": "States.StringToJson($.Arguments['--input_event'])"
+      "TransformData" : {
+        "Type" : "Pass",
+        "Next" : "EndWorkflow",
+        "Parameters" : {
+          "glue_output.$" : "$",
+          "original_input.$" : "States.StringToJson($.Arguments['--input_event'])"
+        },
+        "OutputPath" : "$.original_input"
       },
-      "OutputPath": "$.original_input"
-    },
-    "EndWorkflow": {
-      "Type": "Task",
-      "Resource": var.end_workflow_lambda_arn,
-      "Parameters": {
-        "input_bucket.$": "$.files_to_process[0].input_bucket",
-        "s3_key.$": "$.files_to_process[0].s3_key",
-        "--input_event.$": "$"
-      },
-      "End": true
+      "EndWorkflow" : {
+        "Type" : "Task",
+        "Resource" : var.end_workflow_lambda_arn,
+        "Parameters" : {
+          "input_bucket.$" : "$.files_to_process[0].input_bucket",
+          "s3_key.$" : "$.files_to_process[0].s3_key",
+          "--input_event.$" : "$"
+        },
+        "End" : true
+      }
     }
-  }
-})
+  })
 }
 
 
 
 
 resource "aws_iam_role" "csv_to_parquet_sfn_role" {
-    name = "csv_to_parquet_sfn_role"
-    assume_role_policy = jsonencode({
+  name = "csv_to_parquet_sfn_role"
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {

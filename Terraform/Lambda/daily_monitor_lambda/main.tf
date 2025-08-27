@@ -23,7 +23,7 @@ resource "aws_iam_role" "daily_monitor_lambda_role" {
 
 
 data "aws_iam_policy_document" "daily_monitor_lambda_policy" {
-  
+
   statement {
     sid    = "SQSPoller"
     effect = "Allow"
@@ -37,11 +37,11 @@ data "aws_iam_policy_document" "daily_monitor_lambda_policy" {
     ]
   }
 
-    statement {
+  statement {
     sid    = "SNSSubscription"
     effect = "Allow"
     actions = [
-        "sns:Publish"
+      "sns:Publish"
     ]
     resources = [
       "arn:aws:sns:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:${var.daily_monitor_topic_name}"
@@ -102,14 +102,14 @@ resource "aws_lambda_function" "daily_monitor_lambda" {
   package_type  = "Image"
   image_uri     = "${var.daily_monitor_lambda_ecr_repo_url}:latest"
 
-  architectures = ["arm64"]  
+  architectures = ["arm64"]
 
   memory_size = 512
   timeout     = 30
   environment {
     variables = {
-      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name 
-      SNS_TOPIC_ARN            = var.daily_monitor_topic_arn
+      WORKFLOW_STATUS_TABLE = var.workflow_statut_table_name
+      SNS_TOPIC_ARN         = var.daily_monitor_topic_arn
     }
-}
+  }
 }

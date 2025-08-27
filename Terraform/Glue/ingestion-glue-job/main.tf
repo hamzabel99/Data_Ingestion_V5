@@ -65,5 +65,5 @@ resource "aws_iam_role_policy_attachment" "glue_service_role" {
 resource "aws_s3_object" "glue_etl_script" {
   bucket = var.artifacts_bucket_name
   key    = "gluejob/ingestion-glue-job.py"
-  source = "${path.module}/../Code/ingestion-glue-job/ingestion-glue-job.py" 
+  source = "${path.module}/../Code/ingestion-glue-job/ingestion-glue-job.py"
 }
