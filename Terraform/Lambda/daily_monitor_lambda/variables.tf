@@ -18,3 +18,9 @@ variable "workflow_statut_table_name" {
   type  = string
   
 }
+
+variable "daily_monitor_lambda_ecr_repo_url" {
+  description = "URL of the daily_monitor_lambda_ecr_repo"
+  type = string
+  
+}

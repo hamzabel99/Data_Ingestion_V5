@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
-# IAM role for All Lambda functions
+
 data "aws_iam_policy_document" "daily_monitor_lambda_assume_role" {
   statement {
     effect = "Allow"
@@ -97,17 +97,13 @@ data "archive_file" "data_daily_monitor_lambda" {
 
 
 resource "aws_lambda_function" "daily_monitor_lambda" {
-  filename      = data.archive_file.data_daily_monitor_lambda.output_path
-  function_name = "daily_monitor_lambda-${var.env}"
+  function_name = "daily_monitor_lambda_${var.env}"
   role          = aws_iam_role.daily_monitor_lambda_role.arn
-  handler       = "daily_monitor_lambda.lambda_handler"
+  package_type  = "Image"
+  image_uri     = "${var.daily_monitor_lambda_ecr_repo_url}:latest"
 
-  runtime = "python3.12"
 
-  environment {
-    variables = {
-      WORKFLOW_STATUS_TABLE    = var.workflow_statut_table_name,
-      SNS_TOPIC_ARN           = var.daily_monitor_topic_arn
-    }
-  }
+  memory_size = 512
+  timeout     = 30
+
 }
