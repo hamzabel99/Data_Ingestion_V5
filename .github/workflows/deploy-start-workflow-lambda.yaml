@@ -62,7 +62,7 @@ jobs:
       run: |
         echo " Building Docker image..."
         docker buildx build \
-          -f ./Terraform/Lambda/Code/start_workflow_lambda/Dockerfile \
+          -f ./Terraform/Lambda/Code/start-workflow-lambda/Dockerfile \
           --platform linux/arm64 \
           --provenance=false \
           --sbom=false \
