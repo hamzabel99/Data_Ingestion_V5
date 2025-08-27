@@ -1,0 +1,95 @@
+name: Build and Deploy daily_monitor_lambda Docker Image
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'Terraform/Lambda/daily_monitor_lambda/**'
+      - 'Terraform/Lambda/Code/daily_monitor_lambda/**'
+
+  # Permet de déclencher manuellement
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - staging
+        - prod
+
+env:
+  AWS_REGION: eu-west-3
+  ECR_REGISTRY: 195044943814.dkr.ecr.eu-west-3.amazonaws.com
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    # Matrix pour déployer sur différents environnements
+    strategy:
+      matrix:
+        environment: 
+          - ${{ github.event.inputs.environment || 'dev' }}  # Par défaut 'dev' sur push automatique
+    
+    environment: ${{ matrix.environment }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Set environment variables
+      run: |
+        echo "ECR_REPOSITORY=daily_monitor_lambda_ecr_repo_${{ matrix.environment }}" >> $GITHUB_ENV
+        echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+
+    - name: Build Docker image
+      working-directory: ./Terraform/Lambda/Code/daily_monitor_lambda  # Ajustez selon votre structure
+      run: |
+        docker buildx build \
+          --platform linux/arm64 \
+          --provenance=false \
+          --sbom=false \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          --load .
+
+    - name: Push image to ECR
+      run: |
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    # - name: Update Lambda function via Terraform
+    #   working-directory: ./terraform  # Ajustez selon votre structure
+    #   run: |
+    #     # Initialiser Terraform avec le bon workspace/environnement
+    #     terraform init
+    #     terraform workspace select ${{ matrix.environment }} || terraform workspace new ${{ matrix.environment }}
+        
+    #     # Mettre à jour seulement la Lambda avec la nouvelle image
+    #     terraform plan -target=module.daily_monitor_lambda.aws_lambda_function.daily_monitor_lambda
+    #     terraform apply -target=module.daily_monitor_lambda.aws_lambda_function.daily_monitor_lambda -auto-approve
+    #   env:
+    #     TF_VAR_env: ${{ matrix.environment }}
+
+    - name: Output image URI
+      run: |
+        echo "✅ Image pushed successfully!"
+        echo "Image URI: $ECR_REGISTRY/$ECR_REPOSITORY:latest"
+        echo "Tagged with: $IMAGE_TAG"
