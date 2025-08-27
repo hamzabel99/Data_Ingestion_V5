@@ -57,10 +57,24 @@ jobs:
       run: |
         echo "ECR_REPOSITORY=daily_monitor_lambda_ecr_repo_${{ matrix.environment }}" >> $GITHUB_ENV
         echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
-
-    - name: Build Docker image
-      working-directory: Terraform/Lambda/Code/daily_monitor_lambda  
+    - name: Build Docker image (debug)
+      working-directory: Terraform/Lambda/Code/daily_monitor_lambda
       run: |
+        echo "📍 Current directory:"
+        pwd
+
+        echo "📂 List of files here:"
+        ls -la
+
+        echo "🔍 Checking for Dockerfile existence:"
+        if [ -f Dockerfile ]; then
+          echo "✅ Dockerfile found!"
+        else
+          echo "❌ Dockerfile NOT found!"
+          exit 1
+        fi
+
+        echo "🚀 Building Docker image..."
         docker buildx build \
           --platform linux/arm64 \
           --provenance=false \
