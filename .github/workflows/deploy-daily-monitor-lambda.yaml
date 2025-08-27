@@ -74,19 +74,6 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-    # - name: Update Lambda function via Terraform
-    #   working-directory: ./terraform  # Ajustez selon votre structure
-    #   run: |
-    #     # Initialiser Terraform avec le bon workspace/environnement
-    #     terraform init
-    #     terraform workspace select ${{ matrix.environment }} || terraform workspace new ${{ matrix.environment }}
-        
-    #     # Mettre à jour seulement la Lambda avec la nouvelle image
-    #     terraform plan -target=module.daily_monitor_lambda.aws_lambda_function.daily_monitor_lambda
-    #     terraform apply -target=module.daily_monitor_lambda.aws_lambda_function.daily_monitor_lambda -auto-approve
-    #   env:
-    #     TF_VAR_env: ${{ matrix.environment }}
-
     - name: Output image URI
       run: |
         echo "✅ Image pushed successfully!"
