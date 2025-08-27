@@ -7,6 +7,7 @@ on:
       - 'Terraform/Lambda/daily_monitor_lambda/**'
       - 'Terraform/Lambda/Code/daily_monitor_lambda/**'
 
+  # Permet de déclencher manuellement
   workflow_dispatch:
     inputs:
       environment:
@@ -21,7 +22,7 @@ on:
 
 env:
   AWS_REGION: eu-west-3
-  ECR_REGISTRY: ${{ secrets.DAILY_MONITOR_LAMBDA_ECR_REGISTRY }} 
+  ECR_REGISTRY: 195044943814.dkr.ecr.eu-west-3.amazonaws.com
 
 jobs:
   build-and-deploy:
