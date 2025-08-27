@@ -64,7 +64,7 @@ jobs:
         pwd
 
         echo "📂 List of files here:"
-        ls -la
+        ls
 
         echo "🔍 Checking for Dockerfile existence:"
         if [ -f Dockerfile ]; then
