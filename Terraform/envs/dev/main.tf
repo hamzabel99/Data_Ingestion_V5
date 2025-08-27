@@ -78,12 +78,18 @@ module "sns" {
 
 }
 
+module "ecr" {
+  source = "../../Ecr"
+  env ="${var.env}"  
+}
+
 module "daily_monitor_lambda" {
   source ="../../Lambda/daily_monitor_lambda"
   daily_monitor_topic_name =module.sns.daily_monitor_topic_name
   daily_monitor_topic_arn = module.sns.daily_monitor_topic_arn
   env ="${var.env}"
   workflow_statut_table_name = module.Dynamodb.workflow_statut_table_name
+  daily_monitor_lambda_ecr_repo_url = module.ecr.daily_monitor_lambda_ecr_repo_url
 
 }
 
